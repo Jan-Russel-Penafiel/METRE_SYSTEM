@@ -1,4 +1,25 @@
 {
-    "last_id": 0,
-    "records": []
+    "last_id": 1,
+    "records": [
+        {
+            "id": 1,
+            "trip_token": "trip_2_1774103439344",
+            "public_tracking_token": "6300",
+            "driver_id": 2,
+            "vehicle_type": "Standard Taxi",
+            "started_at": "2026-03-21 22:30:39",
+            "ended_at": "2026-03-22 00:19:05",
+            "total_meters": 34.29,
+            "waiting_seconds": 6506,
+            "final_fare": 266.41,
+            "fare_breakdown_json": "{\"vehicle_type\":\"Standard Taxi\",\"rate_per_meter\":0.15,\"minimum_fare\":40,\"waiting_rate_per_minute\":2,\"night_surcharge_percent\":20,\"distance_fare\":5.14,\"waiting_fare\":216.87,\"night_surcharge\":44.4,\"minimum_adjustment\":0,\"subtotal\":266.41,\"final_fare\":266.41,\"is_night\":true}",
+            "route_points_json": "[{\"lat\":6.486209,\"lng\":124.632042,\"speedKph\":0,\"timestamp\":\"2026-03-21T14:30:35.494Z\"},{\"lat\":6.4864836,\"lng\":124.6319007,\"speedKph\":0,\"timestamp\":\"2026-03-21T16:19:01.740Z\"}]",
+            "start_lat": 6.486209,
+            "start_lng": 124.632042,
+            "end_lat": 6.4864836,
+            "end_lng": 124.6319007,
+            "trip_status": "completed",
+            "created_at": "2026-03-22 00:19:05"
+        }
+    ]
 }

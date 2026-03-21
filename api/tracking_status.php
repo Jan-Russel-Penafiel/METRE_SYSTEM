@@ -35,6 +35,8 @@ foreach ($routePoints as $point) {
     ];
 }
 
+header('Cache-Control: public, max-age=3, s-maxage=5, stale-while-revalidate=10');
+
 json_response([
     'success' => true,
     'trip_token' => $tracking['trip_token'],

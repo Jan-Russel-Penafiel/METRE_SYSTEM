@@ -6,10 +6,6 @@ $user = require_login(['driver', 'admin']);
 $fareSettings = get_fare_settings();
 $vehicleTypeOptions = get_vehicle_type_options();
 $defaultVehicleType = $user['vehicle_type'] ?: ($vehicleTypeOptions[0] ?? 'Standard Taxi');
-$mapHead = <<<'HTML'
-<link href="https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.css" rel="stylesheet">
-<script src="https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.js"></script>
-HTML;
 
 $meterConfig = [
     'driverId' => (int) $user['id'],
@@ -25,16 +21,25 @@ $meterConfig = [
             'waiting_rate_per_minute' => (float) $setting['waiting_rate_per_minute'],
         ];
     }, $fareSettings)),
-    'updateFareUrl' => url('api/update_fare.php'),
-    'endTripUrl' => url('api/end_trip.php'),
-    'distanceUrl' => url('api/calculate_distance.php'),
+    'updateFareUrl' => api_url('api/update_fare.php'),
+    'endTripUrl' => api_url('api/end_trip.php'),
+    'distanceUrl' => api_url('api/calculate_distance.php'),
     'trackingBaseUrl' => absolute_url('index.php'),
     'mapStyle' => map_style_config(),
     'idleTimeoutSeconds' => TRIP_IDLE_TIMEOUT_SECONDS,
     'hasFareSettings' => !empty($fareSettings),
 ];
 
-render_page_start('Live Meter', ['extra_head' => $mapHead]);
+render_page_start('Live Meter', [
+    'page_id' => 'meter',
+    'page_scripts' => ['assets/js/app.js'],
+    'needs_maplibre' => true,
+    'preconnect_origins' => [
+        'https://unpkg.com',
+        'https://tile.openstreetmap.org',
+        'https://nominatim.openstreetmap.org',
+    ],
+]);
 ?>
 <div class="space-y-8">
     <section class="rounded-[2rem] bg-slate-900 px-6 py-8 text-white shadow-xl sm:px-8">
@@ -213,8 +218,7 @@ render_page_start('Live Meter', ['extra_head' => $mapHead]);
 <script>
     window.METRE_CONFIG = <?php echo json_encode($meterConfig); ?>;
 </script>
-<script src="<?php echo h(url('assets/js/location-names.js')); ?>"></script>
-<script src="<?php echo h(url('assets/js/app.js')); ?>"></script>
+
 <?php render_page_end(); ?>
 
 

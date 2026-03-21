@@ -3,6 +3,13 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/data_store.php';
 
+$pathInfo = (string) ($_SERVER['PATH_INFO'] ?? '');
+if ($pathInfo !== '' && preg_match('#^/(assets/(?:js|css)/[^?]+)$#i', $pathInfo, $matches)) {
+    $target = rtrim(APP_BASE_URL, '/') . '/' . ltrim($matches[1], '/');
+    $query = isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] !== '' ? '?' . $_SERVER['QUERY_STRING'] : '';
+    header('Location: ' . $target . $query, true, 302);
+    exit;
+}
 if (!ensure_data_store()) {
     http_response_code(500);
     echo '<h1>Unable to initialize the JSON data store.</h1>';
@@ -25,6 +32,44 @@ function url($path = '')
     }
 
     return ($base === '' ? '' : $base) . '/' . $path;
+}
+
+function asset_url($path = '')
+{
+    $normalizedPath = ltrim((string) $path, '/');
+    $assetPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $normalizedPath);
+    $version = is_file($assetPath) ? (string) filemtime($assetPath) : '';
+    $resolvedUrl = url($normalizedPath);
+
+    if ($version === '') {
+        return $resolvedUrl;
+    }
+
+    return $resolvedUrl . (strpos($resolvedUrl, '?') === false ? '?' : '&') . 'v=' . $version;
+}
+
+function apisix_enabled()
+{
+    return defined('APISIX_ENABLED') && APISIX_ENABLED;
+}
+
+function api_url($path = '')
+{
+    $path = ltrim((string) $path, '/');
+
+    if (!apisix_enabled()) {
+        return url($path);
+    }
+
+    $baseUrl = rtrim((string) APISIX_GATEWAY_BASE_URL, '/');
+    $routePrefix = trim((string) APISIX_ROUTE_PREFIX, '/');
+    $resolvedPath = $routePrefix === '' ? $path : $routePrefix . '/' . $path;
+
+    if ($baseUrl === '') {
+        return '/' . ltrim($resolvedPath, '/');
+    }
+
+    return $baseUrl . '/' . ltrim($resolvedPath, '/');
 }
 
 function absolute_url($path = '')
@@ -351,6 +396,61 @@ function render_page_start($title, $options = [])
     $user = function_exists('current_user') ? current_user() : null;
     $flash = get_flash();
     $extraHead = $options['extra_head'] ?? '';
+    $pageId = trim((string) ($options['page_id'] ?? ''));
+    $bodyClass = trim('min-h-full bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100 ' . (string) ($options['body_class'] ?? ''));
+    $pageScripts = [];
+
+    foreach ((array) ($options['page_scripts'] ?? []) as $scriptPath) {
+        $scriptPath = trim((string) $scriptPath);
+        if ($scriptPath === '') {
+            continue;
+        }
+
+        $pageScripts[] = asset_url($scriptPath);
+    }
+
+    $preconnectOrigins = ['https://cdn.tailwindcss.com'];
+    foreach ((array) ($options['preconnect_origins'] ?? []) as $origin) {
+        $origin = rtrim(trim((string) $origin), '/');
+        if ($origin === '' || in_array($origin, $preconnectOrigins, true)) {
+            continue;
+        }
+
+        $preconnectOrigins[] = $origin;
+    }
+
+    if (apisix_enabled()) {
+        $gatewayBaseUrl = trim((string) APISIX_GATEWAY_BASE_URL);
+        if ($gatewayBaseUrl !== '') {
+            $gatewayParts = parse_url($gatewayBaseUrl);
+            if (!empty($gatewayParts['scheme']) && !empty($gatewayParts['host'])) {
+                $gatewayOrigin = $gatewayParts['scheme'] . '://' . $gatewayParts['host'];
+                if (!empty($gatewayParts['port'])) {
+                    $gatewayOrigin .= ':' . $gatewayParts['port'];
+                }
+
+                if (!in_array($gatewayOrigin, $preconnectOrigins, true)) {
+                    $preconnectOrigins[] = $gatewayOrigin;
+                }
+            }
+        }
+    }
+
+    $bootConfig = [
+        'page' => $pageId,
+        'pageScripts' => array_values(array_unique($pageScripts)),
+    ];
+
+    if (!empty($options['needs_maplibre'])) {
+        $bootConfig['maplibre'] = [
+            'css' => 'https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.css',
+            'js' => 'https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.js',
+        ];
+    }
+
+    $GLOBALS['metre_render_context'] = [
+        'boot' => $bootConfig,
+    ];
     ?>
 <!DOCTYPE html>
 <html lang="en" class="h-full">
@@ -358,6 +458,10 @@ function render_page_start($title, $options = [])
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($title . ' | ' . APP_NAME); ?></title>
+    <?php foreach ($preconnectOrigins as $origin): ?>
+        <link rel="preconnect" href="<?php echo h($origin); ?>" crossorigin>
+        <link rel="dns-prefetch" href="<?php echo h($origin); ?>">
+    <?php endforeach; ?>
     <script>
         window.tailwind = window.tailwind || {};
         window.tailwind.config = {
@@ -370,7 +474,7 @@ function render_page_start($title, $options = [])
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
     <?php echo $extraHead; ?>
 </head>
-<body class="min-h-full bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+<body class="<?php echo h($bodyClass); ?>"<?php echo $pageId !== '' ? ' data-page="' . h($pageId) . '"' : ''; ?>>
 <?php if (!$hideNav): ?>
     <header class="border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
@@ -437,25 +541,15 @@ function render_page_start($title, $options = [])
 
 function render_page_end()
 {
+    $context = $GLOBALS['metre_render_context'] ?? ['boot' => []];
+    $bootConfig = $context['boot'] ?? [];
+    unset($GLOBALS['metre_render_context']);
     ?>
     </main>
     <script>
-        document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
-            button.addEventListener('click', function () {
-                document.documentElement.classList.toggle('dark');
-                var isDark = document.documentElement.classList.contains('dark');
-                localStorage.setItem('metre-theme', isDark ? 'dark' : 'light');
-            });
-        });
-
-        var mobileToggle = document.querySelector('[data-mobile-menu-toggle]');
-        var mobilePanel = document.querySelector('[data-mobile-menu-panel]');
-        if (mobileToggle && mobilePanel) {
-            mobileToggle.addEventListener('click', function () {
-                mobilePanel.classList.toggle('hidden');
-            });
-        }
+        window.METRE_BOOT = <?php echo json_encode($bootConfig, JSON_UNESCAPED_SLASHES); ?>;
     </script>
+    <script src="<?php echo h(asset_url('assets/js/metre-optimized.js')); ?>" defer></script>
 </body>
 </html>
     <?php

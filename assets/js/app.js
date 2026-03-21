@@ -65,7 +65,20 @@
         requestLocationAccess();
     }
 
-    window.setInterval(syncFare, 8000);
+    window.setInterval(function () {
+        if (document.hidden) {
+            return;
+        }
+
+        syncFare();
+    }, 8000);
+
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            syncFare();
+            render();
+        }
+    });
     window.setInterval(function () {
         if (state.tripToken && state.status === 'in_trip' && state.idleSince) {
             var idleSeconds = Math.floor((Date.now() - state.idleSince) / 1000);

@@ -26,7 +26,12 @@ $breakdown = json_decode($trip['fare_breakdown_json'] ?? '{}', true);
 $routePoints = json_decode($trip['route_points_json'] ?? '[]', true);
 $routeCount = is_array($routePoints) ? count($routePoints) : 0;
 
-render_page_start('Receipt');
+render_page_start('Receipt', [
+    'page_id' => 'receipt',
+    'preconnect_origins' => [
+        'https://nominatim.openstreetmap.org',
+    ],
+]);
 ?>
 <div class="mx-auto max-w-4xl space-y-6">
     <section class="rounded-3xl bg-slate-900 px-6 py-8 text-white shadow-xl sm:px-8 print:bg-white print:text-slate-900 print:shadow-none">
@@ -140,23 +145,5 @@ render_page_start('Receipt');
         <?php endif; ?>
     </section>
 </div>
-<script src="<?php echo h(url('assets/js/location-names.js')); ?>"></script>
-<script>
-    (function () {
-        var locationNames = window.MetreLocationNames;
-        var nodes = document.querySelectorAll('[data-location-output]');
 
-        Array.prototype.forEach.call(nodes, function (node) {
-            if (!locationNames) {
-                node.textContent = 'Location unavailable.';
-                return;
-            }
-
-            locationNames.applyToElement(node, node.getAttribute('data-lat'), node.getAttribute('data-lng'), {
-                loadingText: 'Resolving location...',
-                fallbackText: 'Location unavailable.'
-            });
-        });
-    })();
-</script>
 <?php render_page_end(); ?>

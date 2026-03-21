@@ -30,6 +30,8 @@
     var marker = null;
     var locationNames = window.MetreLocationNames || null;
 
+    var loadingTracking = false;
+
     initMap();
 
     if (!config.token) {
@@ -38,7 +40,19 @@
     }
 
     loadTracking();
-    window.setInterval(loadTracking, 8000);
+    window.setInterval(function () {
+        if (document.hidden) {
+            return;
+        }
+
+        loadTracking();
+    }, 8000);
+
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            loadTracking();
+        }
+    });
 
     function initMap() {
         if (!elements.mapContainer || !window.maplibregl) {
@@ -100,6 +114,12 @@
     }
 
     function loadTracking() {
+        if (loadingTracking) {
+            return;
+        }
+
+        loadingTracking = true;
+
         fetch(config.trackingStatusUrl + '?token=' + encodeURIComponent(config.token))
             .then(handleJsonResponse)
             .then(function (data) {
@@ -110,6 +130,9 @@
                 elements.mapStatus.textContent = 'Tracking data is unavailable.';
                 elements.statusBadge.textContent = 'Unavailable';
                 elements.statusBadge.className = 'rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-rose-700 dark:bg-rose-950/70 dark:text-rose-300';
+            })
+            .finally(function () {
+                loadingTracking = false;
             });
     }
 

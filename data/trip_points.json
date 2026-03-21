@@ -1,4 +1,25 @@
 {
-    "last_id": 0,
-    "records": []
+    "last_id": 2,
+    "records": [
+        {
+            "id": 1,
+            "trip_token": "trip_2_1774103439344",
+            "driver_id": 2,
+            "point_type": "start",
+            "latitude": 6.4864836,
+            "longitude": 124.6319007,
+            "meter_mark": 0,
+            "captured_at": "2026-03-22 00:19:03"
+        },
+        {
+            "id": 2,
+            "trip_token": "trip_2_1774103439344",
+            "driver_id": 2,
+            "point_type": "end",
+            "latitude": 6.4864836,
+            "longitude": 124.6319007,
+            "meter_mark": 34.29,
+            "captured_at": "2026-03-22 00:19:05"
+        }
+    ]
 }

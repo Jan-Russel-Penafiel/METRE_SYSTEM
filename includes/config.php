@@ -25,6 +25,10 @@ define('DATA_STORAGE_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data');
 
 define('GOOGLE_MAPS_API_KEY', '');
 
+define('APISIX_ENABLED', false);
+define('APISIX_GATEWAY_BASE_URL', '');
+define('APISIX_ROUTE_PREFIX', '/metre-gateway');
+
 define('TRIP_START_SPEED_KPH', 3);
 define('TRIP_START_DISTANCE_METERS', 12);
 define('TRIP_IDLE_TIMEOUT_SECONDS', 30);

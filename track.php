@@ -3,18 +3,24 @@
 require_once __DIR__ . '/includes/functions.php';
 
 $token = normalize_tracking_token($_GET['token'] ?? '');
-$mapHead = <<<'HTML'
-<link href="https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.css" rel="stylesheet">
-<script src="https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.js"></script>
-HTML;
 
 $trackerConfig = [
     'token' => $token,
-    'trackingStatusUrl' => url('api/tracking_status.php'),
+    'trackingStatusUrl' => api_url('api/tracking_status.php'),
     'mapStyle' => map_style_config(),
 ];
 
-render_page_start('Track Your Ride', ['hide_nav' => true, 'extra_head' => $mapHead]);
+render_page_start('Track Your Ride', [
+    'hide_nav' => true,
+    'page_id' => 'tracker',
+    'page_scripts' => ['assets/js/tracker.js'],
+    'needs_maplibre' => true,
+    'preconnect_origins' => [
+        'https://unpkg.com',
+        'https://tile.openstreetmap.org',
+        'https://nominatim.openstreetmap.org',
+    ],
+]);
 ?>
 <div class="mx-auto max-w-6xl space-y-8">
     <section class="rounded-[2rem] bg-slate-900 px-6 py-10 text-white shadow-xl sm:px-8">
@@ -99,6 +105,5 @@ render_page_start('Track Your Ride', ['hide_nav' => true, 'extra_head' => $mapHe
 <script>
     window.TRACKER_CONFIG = <?php echo json_encode($trackerConfig); ?>;
 </script>
-<script src="<?php echo h(url('assets/js/location-names.js')); ?>"></script>
-<script src="<?php echo h(url('assets/js/tracker.js')); ?>"></script>
+
 <?php render_page_end(); ?>
