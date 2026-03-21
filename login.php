@@ -41,7 +41,7 @@ render_page_start('Login', ['hide_nav' => true]);
             </div>
             <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div class="text-sm font-semibold text-sky-200">Server Sync</div>
-                <div class="mt-2 text-sm text-slate-300">Fare logic stays enforced on PHP and MySQL.</div>
+                <div class="mt-2 text-sm text-slate-300">Fare logic stays enforced on PHP with JSON-backed storage.</div>
             </div>
             <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div class="text-sm font-semibold text-sky-200">Responsive UI</div>
@@ -55,7 +55,7 @@ render_page_start('Login', ['hide_nav' => true]);
             <div class="mb-6">
                 <h2 class="text-2xl font-bold tracking-tight">Sign in</h2>
                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                    Default prototype accounts are included in <code>db.sql</code>.
+                    Default prototype accounts are seeded in <code>data/users.json</code>.
                 </p>
             </div>
 

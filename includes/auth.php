@@ -20,11 +20,7 @@ function login_user($user)
 
 function attempt_login($username, $password)
 {
-    $user = db_select_one(
-        'SELECT * FROM users WHERE username = ? AND is_active = 1 LIMIT 1',
-        's',
-        [$username]
-    );
+    $user = find_user_by_username($username, true);
 
     if (!$user) {
         return false;

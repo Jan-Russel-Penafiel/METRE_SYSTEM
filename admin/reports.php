@@ -9,31 +9,16 @@ $dateTo = trim((string) ($_GET['date_to'] ?? date('Y-m-d')));
 $search = trim((string) ($_GET['search'] ?? ''));
 $export = trim((string) ($_GET['export'] ?? ''));
 
-$where = ['DATE(t.started_at) BETWEEN ? AND ?'];
-$types = 'ss';
-$params = [$dateFrom, $dateTo];
+$filters = [
+    'date_from' => $dateFrom,
+    'date_to' => $dateTo,
+    'search' => $search,
+];
 
-if ($search !== '') {
-    $where[] = '(u.full_name LIKE ? OR u.username LIKE ? OR t.vehicle_type LIKE ?)';
-    $types .= 'sss';
-    $like = '%' . $search . '%';
-    $params[] = $like;
-    $params[] = $like;
-    $params[] = $like;
-}
-
-$sqlBase = ' FROM trips t INNER JOIN users u ON u.id = t.driver_id WHERE ' . implode(' AND ', $where);
-$summary = db_select_one(
-    'SELECT COUNT(*) AS trip_count, COALESCE(SUM(t.final_fare), 0) AS revenue, COALESCE(AVG(t.final_fare), 0) AS average_fare, COALESCE(SUM(t.total_meters), 0) AS total_meters' . $sqlBase,
-    $types,
-    $params
-);
-
-$trips = db_select_all(
-    'SELECT t.id, t.started_at, t.ended_at, t.vehicle_type, t.total_meters, t.final_fare, t.waiting_seconds, u.full_name, u.username' . $sqlBase . ' ORDER BY t.started_at DESC LIMIT 300',
-    $types,
-    $params
-);
+$summary = summarize_trips($filters);
+$trips = list_trips_filtered($filters + [
+    'limit' => 300,
+]);
 
 if ($export === 'csv') {
     header('Content-Type: text/csv; charset=utf-8');

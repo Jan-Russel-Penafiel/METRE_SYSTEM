@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/auth.php';
 $user = require_login(['driver', 'admin']);
 
 if (!ensure_tracking_schema()) {
-    json_response(['success' => false, 'message' => 'Unable to prepare live tracking tables.'], 500);
+    json_response(['success' => false, 'message' => 'Unable to prepare live tracking storage.'], 500);
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -83,37 +83,19 @@ if ($latitude !== null && $longitude !== null) {
 
 $_SESSION['trip_point_meta'][$tripToken] = $tripMeta;
 
-$trackingSaved = db_execute(
-    'INSERT INTO live_trip_tracking (trip_token, public_tracking_token, driver_id, vehicle_type, status, started_at, last_lat, last_lng, meters, waiting_seconds, current_fare, route_points_json, updated_at, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
-     ON DUPLICATE KEY UPDATE
-        public_tracking_token = VALUES(public_tracking_token),
-        vehicle_type = VALUES(vehicle_type),
-        status = VALUES(status),
-        started_at = VALUES(started_at),
-        last_lat = VALUES(last_lat),
-        last_lng = VALUES(last_lng),
-        meters = VALUES(meters),
-        waiting_seconds = VALUES(waiting_seconds),
-        current_fare = VALUES(current_fare),
-        route_points_json = VALUES(route_points_json),
-        updated_at = NOW()',
-    'ssisssdddids',
-    [
-        $tripToken,
-        $publicTrackingToken,
-        (int) $user['id'],
-        $breakdown['vehicle_type'],
-        $status,
-        to_mysql_datetime($startedAt),
-        $latitude,
-        $longitude,
-        $meters,
-        $waitingSeconds,
-        $breakdown['final_fare'],
-        json_encode($sanitizedRoute),
-    ]
-);
+$trackingSaved = upsert_live_tracking_record($tripToken, [
+    'public_tracking_token' => $publicTrackingToken,
+    'driver_id' => (int) $user['id'],
+    'vehicle_type' => $breakdown['vehicle_type'],
+    'status' => $status,
+    'started_at' => to_mysql_datetime($startedAt),
+    'last_lat' => $latitude,
+    'last_lng' => $longitude,
+    'meters' => $meters,
+    'waiting_seconds' => $waitingSeconds,
+    'current_fare' => $breakdown['final_fare'],
+    'route_points_json' => json_encode($sanitizedRoute, JSON_UNESCAPED_SLASHES),
+]);
 
 if (!$trackingSaved) {
     json_response(['success' => false, 'message' => 'Unable to update live tracking state.'], 500);
@@ -128,5 +110,3 @@ json_response([
     'public_tracking_token' => $publicTrackingToken,
     'tracking_url' => absolute_url('index.php?token=' . $publicTrackingToken),
 ]);
-
-

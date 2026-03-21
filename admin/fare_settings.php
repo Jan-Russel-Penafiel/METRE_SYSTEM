@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_login(['admin']);
 
 $editingId = isset($_GET['edit']) ? (int) $_GET['edit'] : 0;
-$editingSetting = $editingId > 0 ? db_select_one('SELECT * FROM fare_settings WHERE id = ? LIMIT 1', 'i', [$editingId]) : null;
+$editingSetting = $editingId > 0 ? find_fare_setting_by_id($editingId) : null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int) ($_POST['id'] ?? 0);
@@ -20,33 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect_to('admin/fare_settings.php');
     }
 
-    $duplicate = db_select_one(
-        'SELECT id FROM fare_settings WHERE vehicle_type = ? AND id <> ? LIMIT 1',
-        'si',
-        [$vehicleType, $id]
-    );
-
-    if ($duplicate) {
+    if (fare_setting_exists_for_vehicle($vehicleType, $id)) {
         set_flash('That vehicle type already has a fare rule.', 'error');
         redirect_to('admin/fare_settings.php' . ($id ? '?edit=' . $id : ''));
     }
 
-    if ($id > 0) {
-        db_execute(
-            'UPDATE fare_settings SET vehicle_type = ?, rate_per_meter = ?, minimum_fare = ?, night_surcharge_percent = ?, waiting_rate_per_minute = ?, updated_at = NOW() WHERE id = ?',
-            'sddddi',
-            [$vehicleType, $ratePerMeter, $minimumFare, $nightSurcharge, $waitingRate, $id]
-        );
-        set_flash('Fare setting updated.', 'success');
-    } else {
-        db_execute(
-            'INSERT INTO fare_settings (vehicle_type, rate_per_meter, minimum_fare, night_surcharge_percent, waiting_rate_per_minute, updated_at) VALUES (?, ?, ?, ?, ?, NOW())',
-            'sdddd',
-            [$vehicleType, $ratePerMeter, $minimumFare, $nightSurcharge, $waitingRate]
-        );
-        set_flash('Fare setting saved.', 'success');
-    }
+    save_fare_setting_record($id, [
+        'vehicle_type' => $vehicleType,
+        'rate_per_meter' => $ratePerMeter,
+        'minimum_fare' => $minimumFare,
+        'night_surcharge_percent' => $nightSurcharge,
+        'waiting_rate_per_minute' => $waitingRate,
+    ]);
 
+    set_flash($id > 0 ? 'Fare setting updated.' : 'Fare setting saved.', 'success');
     redirect_to('admin/fare_settings.php');
 }
 

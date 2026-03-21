@@ -12,16 +12,7 @@ if (!ensure_tracking_schema()) {
     json_response(['success' => false, 'message' => 'Tracking service is unavailable.'], 500);
 }
 
-$tracking = db_select_one(
-    "SELECT ltt.*, u.full_name
-     FROM live_trip_tracking ltt
-     INNER JOIN users u ON u.id = ltt.driver_id
-     WHERE ltt.public_tracking_token = ?
-     ORDER BY FIELD(ltt.status, 'in_trip', 'waiting', 'completed'), ltt.updated_at DESC, ltt.id DESC
-     LIMIT 1",
-    's',
-    [$token]
-);
+$tracking = find_live_tracking_by_public_token($token);
 
 if (!$tracking) {
     json_response(['success' => false, 'message' => 'Tracking code not found.'], 404);

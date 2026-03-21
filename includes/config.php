@@ -4,7 +4,14 @@ if (ob_get_level() === 0) {
     ob_start();
 }
 
-mysqli_report(MYSQLI_REPORT_OFF);
+$sessionDirectory = dirname(__DIR__) . DIRECTORY_SEPARATOR . '.tmp';
+if (!is_dir($sessionDirectory) && !mkdir($sessionDirectory, 0777, true) && !is_dir($sessionDirectory)) {
+    $sessionDirectory = null;
+}
+
+if ($sessionDirectory !== null) {
+    session_save_path($sessionDirectory);
+}
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -14,11 +21,7 @@ date_default_timezone_set('Asia/Manila');
 
 define('APP_NAME', 'Metre');
 define('APP_BASE_URL', '/metre');
-
-define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'metre_db');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DATA_STORAGE_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data');
 
 define('GOOGLE_MAPS_API_KEY', '');
 

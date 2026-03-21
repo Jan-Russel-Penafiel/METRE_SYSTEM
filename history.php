@@ -7,18 +7,17 @@ $user = require_login(['driver', 'admin']);
 $dateFrom = trim((string) ($_GET['date_from'] ?? date('Y-m-d', strtotime('-30 days'))));
 $dateTo = trim((string) ($_GET['date_to'] ?? date('Y-m-d')));
 
-$where = ['DATE(t.started_at) BETWEEN ? AND ?'];
-$types = 'ss';
-$params = [$dateFrom, $dateTo];
+$filters = [
+    'date_from' => $dateFrom,
+    'date_to' => $dateTo,
+    'limit' => 200,
+];
 
 if ($user['user_type'] === 'driver') {
-    $where[] = 't.driver_id = ?';
-    $types .= 'i';
-    $params[] = $user['id'];
+    $filters['driver_id'] = (int) $user['id'];
 }
 
-$sql = 'SELECT t.id, t.vehicle_type, t.started_at, t.ended_at, t.total_meters, t.waiting_seconds, t.final_fare, u.full_name FROM trips t INNER JOIN users u ON u.id = t.driver_id WHERE ' . implode(' AND ', $where) . ' ORDER BY t.started_at DESC LIMIT 200';
-$trips = db_select_all($sql, $types, $params);
+$trips = list_trips_filtered($filters);
 
 render_page_start('Trip History');
 ?>

@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/auth.php';
 $user = require_login(['driver', 'admin']);
 
 if (!ensure_tracking_schema()) {
-    json_response(['success' => false, 'message' => 'Unable to prepare live tracking tables.'], 500);
+    json_response(['success' => false, 'message' => 'Unable to prepare live tracking storage.'], 500);
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -30,12 +30,12 @@ if ($tripToken === '') {
 }
 
 if ($publicTrackingToken === '') {
-    $liveTracking = db_select_one('SELECT public_tracking_token FROM live_trip_tracking WHERE trip_token = ? LIMIT 1', 's', [$tripToken]);
+    $liveTracking = find_live_tracking_by_trip_token($tripToken);
     $existingTrackingCode = $liveTracking['public_tracking_token'] ?? '';
     $publicTrackingToken = preg_match('/^\d{4}$/', $existingTrackingCode) ? $existingTrackingCode : generate_public_token();
 }
 
-$existingTrip = db_select_one('SELECT id FROM trips WHERE trip_token = ? LIMIT 1', 's', [$tripToken]);
+$existingTrip = find_trip_by_token($tripToken);
 if ($existingTrip) {
     json_response([
         'success' => true,
@@ -70,71 +70,49 @@ $endLng = $lastPoint['lng'] ?? (isset($payload['end_lng']) ? (float) $payload['e
 
 $breakdown = calculate_trip_fare($meters, $waitingSeconds, $vehicleType, $startedAt);
 
-$tripId = db_execute(
-    'INSERT INTO trips (trip_token, public_tracking_token, driver_id, vehicle_type, started_at, ended_at, total_meters, waiting_seconds, final_fare, fare_breakdown_json, route_points_json, start_lat, start_lng, end_lat, end_lng, trip_status, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
-    'ssisssdidssdddds',
-    [
-        $tripToken,
-        $publicTrackingToken,
-        (int) $user['id'],
-        $breakdown['vehicle_type'],
-        $startedAt,
-        $endedAt,
-        $meters,
-        $waitingSeconds,
-        $breakdown['final_fare'],
-        json_encode($breakdown),
-        json_encode($sanitizedRoute),
-        $startLat,
-        $startLng,
-        $endLat,
-        $endLng,
-        'completed',
-    ]
-);
+$trip = insert_trip_record([
+    'trip_token' => $tripToken,
+    'public_tracking_token' => $publicTrackingToken,
+    'driver_id' => (int) $user['id'],
+    'vehicle_type' => $breakdown['vehicle_type'],
+    'started_at' => $startedAt,
+    'ended_at' => $endedAt,
+    'total_meters' => $meters,
+    'waiting_seconds' => $waitingSeconds,
+    'final_fare' => $breakdown['final_fare'],
+    'fare_breakdown_json' => json_encode($breakdown, JSON_UNESCAPED_SLASHES),
+    'route_points_json' => json_encode($sanitizedRoute, JSON_UNESCAPED_SLASHES),
+    'start_lat' => $startLat,
+    'start_lng' => $startLng,
+    'end_lat' => $endLat,
+    'end_lng' => $endLng,
+    'trip_status' => 'completed',
+]);
 
-if (!$tripId) {
+if (!$trip) {
     json_response(['success' => false, 'message' => 'Unable to save trip.'], 500);
 }
+
+$tripId = (int) $trip['id'];
 
 if ($endLat !== null && $endLng !== null) {
     insert_trip_point($tripToken, $user['id'], 'end', $endLat, $endLng, $meters);
 }
 
-$trackingSaved = db_execute(
-    'INSERT INTO live_trip_tracking (trip_token, public_tracking_token, driver_id, vehicle_type, status, started_at, ended_at, last_lat, last_lng, meters, waiting_seconds, current_fare, route_points_json, updated_at, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
-     ON DUPLICATE KEY UPDATE
-        public_tracking_token = VALUES(public_tracking_token),
-        vehicle_type = VALUES(vehicle_type),
-        status = VALUES(status),
-        started_at = VALUES(started_at),
-        ended_at = VALUES(ended_at),
-        last_lat = VALUES(last_lat),
-        last_lng = VALUES(last_lng),
-        meters = VALUES(meters),
-        waiting_seconds = VALUES(waiting_seconds),
-        current_fare = VALUES(current_fare),
-        route_points_json = VALUES(route_points_json),
-        updated_at = NOW()',
-    'ssissssdddids',
-    [
-        $tripToken,
-        $publicTrackingToken,
-        (int) $user['id'],
-        $breakdown['vehicle_type'],
-        'completed',
-        $startedAt,
-        $endedAt,
-        $endLat,
-        $endLng,
-        $meters,
-        $waitingSeconds,
-        $breakdown['final_fare'],
-        json_encode($sanitizedRoute),
-    ]
-);
+$trackingSaved = upsert_live_tracking_record($tripToken, [
+    'public_tracking_token' => $publicTrackingToken,
+    'driver_id' => (int) $user['id'],
+    'vehicle_type' => $breakdown['vehicle_type'],
+    'status' => 'completed',
+    'started_at' => $startedAt,
+    'ended_at' => $endedAt,
+    'last_lat' => $endLat,
+    'last_lng' => $endLng,
+    'meters' => $meters,
+    'waiting_seconds' => $waitingSeconds,
+    'current_fare' => $breakdown['final_fare'],
+    'route_points_json' => json_encode($sanitizedRoute, JSON_UNESCAPED_SLASHES),
+]);
 
 if (!$trackingSaved) {
     json_response(['success' => false, 'message' => 'Trip saved but live tracking could not be updated.'], 500);
@@ -151,10 +129,8 @@ if (isset($_SESSION['fare_update_' . $tripToken])) {
 json_response([
     'success' => true,
     'message' => 'Trip finalized.',
-    'trip_id' => (int) $tripId,
+    'trip_id' => $tripId,
     'final_fare' => $breakdown['final_fare'],
-    'receipt_url' => url('receipt.php?id=' . (int) $tripId),
+    'receipt_url' => url('receipt.php?id=' . $tripId),
     'tracking_url' => absolute_url('index.php?token=' . $publicTrackingToken),
 ]);
-
-

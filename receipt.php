@@ -10,11 +10,7 @@ if ($tripId <= 0) {
     redirect_to($user['user_type'] === 'admin' ? 'admin/reports.php' : 'history.php');
 }
 
-$trip = db_select_one(
-    'SELECT t.*, u.full_name, u.username FROM trips t INNER JOIN users u ON u.id = t.driver_id WHERE t.id = ? LIMIT 1',
-    'i',
-    [$tripId]
-);
+$trip = find_trip_by_id($tripId);
 
 if (!$trip) {
     set_flash('Trip receipt not found.', 'error');

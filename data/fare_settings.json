@@ -1,0 +1,41 @@
+{
+    "last_id": 4,
+    "records": [
+        {
+            "id": 1,
+            "vehicle_type": "Standard Taxi",
+            "rate_per_meter": 0.15,
+            "minimum_fare": 40,
+            "night_surcharge_percent": 20,
+            "waiting_rate_per_minute": 2,
+            "updated_at": "2026-01-01 00:00:00"
+        },
+        {
+            "id": 2,
+            "vehicle_type": "Premium Sedan",
+            "rate_per_meter": 0.18,
+            "minimum_fare": 60,
+            "night_surcharge_percent": 20,
+            "waiting_rate_per_minute": 2.5,
+            "updated_at": "2026-01-01 00:00:00"
+        },
+        {
+            "id": 3,
+            "vehicle_type": "SUV",
+            "rate_per_meter": 0.22,
+            "minimum_fare": 75,
+            "night_surcharge_percent": 20,
+            "waiting_rate_per_minute": 3,
+            "updated_at": "2026-01-01 00:00:00"
+        },
+        {
+            "id": 4,
+            "vehicle_type": "Van",
+            "rate_per_meter": 0.25,
+            "minimum_fare": 85,
+            "night_surcharge_percent": 20,
+            "waiting_rate_per_minute": 3.5,
+            "updated_at": "2026-01-01 00:00:00"
+        }
+    ]
+}

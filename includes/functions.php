@@ -1,113 +1,13 @@
 <?php
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/data_store.php';
 
-function db_connect()
-{
-    static $connection = null;
-
-    if ($connection instanceof mysqli) {
-        return $connection;
-    }
-
-    $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-    if (!$connection) {
-        http_response_code(500);
-        echo '<h1>Database connection failed.</h1>';
-        echo '<p>Update the database settings in includes/config.php and import db.sql first.</p>';
-        exit;
-    }
-
-    mysqli_set_charset($connection, 'utf8mb4');
-
-    return $connection;
-}
-
-function db_bind_params($statement, $types, $params)
-{
-    if ($types === '' || empty($params)) {
-        return true;
-    }
-
-    $bindArguments = [$statement, $types];
-
-    foreach ($params as $key => $value) {
-        $bindArguments[] = &$params[$key];
-    }
-
-    return call_user_func_array('mysqli_stmt_bind_param', $bindArguments);
-}
-
-function db_select_all($sql, $types = '', $params = [])
-{
-    $connection = db_connect();
-    $statement = mysqli_prepare($connection, $sql);
-
-    if (!$statement) {
-        return [];
-    }
-
-    if (!db_bind_params($statement, $types, $params)) {
-        mysqli_stmt_close($statement);
-        return [];
-    }
-
-    mysqli_stmt_execute($statement);
-    $result = mysqli_stmt_get_result($statement);
-    $rows = [];
-
-    if ($result) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $rows[] = $row;
-        }
-    }
-
-    mysqli_stmt_close($statement);
-
-    return $rows;
-}
-
-function db_select_one($sql, $types = '', $params = [])
-{
-    $rows = db_select_all($sql, $types, $params);
-    return $rows ? $rows[0] : null;
-}
-
-function db_execute($sql, $types = '', $params = [])
-{
-    $connection = db_connect();
-    $statement = mysqli_prepare($connection, $sql);
-
-    if (!$statement) {
-        return false;
-    }
-
-    if (!db_bind_params($statement, $types, $params)) {
-        mysqli_stmt_close($statement);
-        return false;
-    }
-
-    $success = mysqli_stmt_execute($statement);
-    $insertId = mysqli_insert_id($connection);
-
-    mysqli_stmt_close($statement);
-
-    if (!$success) {
-        return false;
-    }
-
-    return $insertId > 0 ? $insertId : true;
-}
-
-function db_query($sql)
-{
-    return mysqli_query(db_connect(), $sql);
-}
-
-function db_escape($value)
-{
-    return mysqli_real_escape_string(db_connect(), (string) $value);
+if (!ensure_data_store()) {
+    http_response_code(500);
+    echo '<h1>Unable to initialize the JSON data store.</h1>';
+    echo '<p>Check write access for the data directory: ' . htmlspecialchars(DATA_STORAGE_PATH, ENT_QUOTES, 'UTF-8') . '</p>';
+    exit;
 }
 
 function h($value)
@@ -140,22 +40,20 @@ function generate_public_token()
 
     for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
         $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+        $inUse = false;
 
-        if (!db_table_exists('live_trip_tracking')) {
-            return $code;
+        foreach (data_records('live_trip_tracking') as $tracking) {
+            if ((string) ($tracking['public_tracking_token'] ?? '') !== $code) {
+                continue;
+            }
+
+            if (in_array((string) ($tracking['status'] ?? ''), ['waiting', 'in_trip'], true)) {
+                $inUse = true;
+                break;
+            }
         }
 
-        $activeTrip = db_select_one(
-            "SELECT 1
-             FROM live_trip_tracking
-             WHERE public_tracking_token = ?
-             AND status IN ('waiting', 'in_trip')
-             LIMIT 1",
-            's',
-            [$code]
-        );
-
-        if (!$activeTrip) {
+        if (!$inUse) {
             return $code;
         }
     }
@@ -217,146 +115,9 @@ function map_style_config()
     ];
 }
 
-function db_table_exists($tableName)
-{
-    $row = db_select_one(
-        'SELECT 1
-         FROM information_schema.tables
-         WHERE table_schema = ? AND table_name = ?
-         LIMIT 1',
-        'ss',
-        [DB_NAME, $tableName]
-    );
-
-    return $row !== null;
-}
-
-function db_column_exists($tableName, $columnName)
-{
-    $row = db_select_one(
-        'SELECT 1
-         FROM information_schema.columns
-         WHERE table_schema = ? AND table_name = ? AND column_name = ?
-         LIMIT 1',
-        'sss',
-        [DB_NAME, $tableName, $columnName]
-    );
-
-    return $row !== null;
-}
-
-function db_index_exists($tableName, $indexName)
-{
-    $row = db_select_one(
-        'SELECT 1
-         FROM information_schema.statistics
-         WHERE table_schema = ? AND table_name = ? AND index_name = ?
-         LIMIT 1',
-        'sss',
-        [DB_NAME, $tableName, $indexName]
-    );
-
-    return $row !== null;
-}
-
 function ensure_tracking_schema()
 {
-    static $ensured = false;
-
-    if ($ensured) {
-        return true;
-    }
-
-    if (!db_table_exists('live_trip_tracking')) {
-        $created = db_query(
-            "CREATE TABLE IF NOT EXISTS live_trip_tracking (
-                id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                trip_token VARCHAR(80) NOT NULL UNIQUE,
-                public_tracking_token VARCHAR(80) NOT NULL,
-                driver_id INT UNSIGNED NOT NULL,
-                vehicle_type VARCHAR(80) NOT NULL,
-                status ENUM('waiting', 'in_trip', 'completed') NOT NULL DEFAULT 'waiting',
-                started_at DATETIME NULL,
-                ended_at DATETIME NULL,
-                last_lat DECIMAL(10,7) NULL,
-                last_lng DECIMAL(10,7) NULL,
-                meters DECIMAL(12,2) NOT NULL DEFAULT 0,
-                waiting_seconds INT UNSIGNED NOT NULL DEFAULT 0,
-                current_fare DECIMAL(10,2) NOT NULL DEFAULT 0,
-                route_points_json LONGTEXT NULL,
-                updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                CONSTRAINT fk_live_trip_tracking_driver FOREIGN KEY (driver_id) REFERENCES users (id)
-                    ON UPDATE CASCADE ON DELETE RESTRICT,
-                INDEX idx_live_trip_tracking_driver_id (driver_id),
-                INDEX idx_live_trip_tracking_status (status),
-                INDEX idx_live_trip_tracking_token (public_tracking_token)
-            ) ENGINE=InnoDB"
-        );
-
-        if (!$created) {
-            return false;
-        }
-    }
-
-    if (db_table_exists('live_trip_tracking') && db_index_exists('live_trip_tracking', 'public_tracking_token')) {
-        $droppedTrackingUnique = db_query(
-            "ALTER TABLE live_trip_tracking
-             DROP INDEX public_tracking_token"
-        );
-
-        if (!$droppedTrackingUnique) {
-            return false;
-        }
-    }
-
-    if (db_table_exists('live_trip_tracking') && !db_index_exists('live_trip_tracking', 'idx_live_trip_tracking_token')) {
-        $addedTrackingIndex = db_query(
-            "ALTER TABLE live_trip_tracking
-             ADD INDEX idx_live_trip_tracking_token (public_tracking_token)"
-        );
-
-        if (!$addedTrackingIndex) {
-            return false;
-        }
-    }
-
-    if (db_table_exists('trips') && !db_column_exists('trips', 'public_tracking_token')) {
-        $added = db_query(
-            "ALTER TABLE trips
-             ADD COLUMN public_tracking_token VARCHAR(80) NULL AFTER trip_token"
-        );
-
-        if (!$added) {
-            return false;
-        }
-    }
-
-    if (db_table_exists('trips') && db_index_exists('trips', 'public_tracking_token')) {
-        $droppedTripsUnique = db_query(
-            "ALTER TABLE trips
-             DROP INDEX public_tracking_token"
-        );
-
-        if (!$droppedTripsUnique) {
-            return false;
-        }
-    }
-
-    if (db_table_exists('trips') && !db_index_exists('trips', 'idx_trips_public_tracking_token')) {
-        $addedTripsIndex = db_query(
-            "ALTER TABLE trips
-             ADD INDEX idx_trips_public_tracking_token (public_tracking_token)"
-        );
-
-        if (!$addedTripsIndex) {
-            return false;
-        }
-    }
-
-    $ensured = true;
-
-    return true;
+    return ensure_data_store();
 }
 
 function redirect_to($path)
@@ -489,22 +250,19 @@ function get_vehicle_type_options()
 
 function get_fare_settings()
 {
-    return db_select_all('SELECT * FROM fare_settings ORDER BY vehicle_type ASC');
+    return list_fare_settings_records();
 }
 
 function get_fare_setting($vehicleType)
 {
-    $row = db_select_one(
-        'SELECT * FROM fare_settings WHERE vehicle_type = ? LIMIT 1',
-        's',
-        [$vehicleType]
-    );
-
-    if ($row) {
-        return $row;
+    foreach (list_fare_settings_records() as $setting) {
+        if ((string) ($setting['vehicle_type'] ?? '') === (string) $vehicleType) {
+            return $setting;
+        }
     }
 
-    return db_select_one('SELECT * FROM fare_settings ORDER BY id ASC LIMIT 1');
+    $settings = list_fare_settings_records();
+    return $settings ? $settings[0] : null;
 }
 
 function calculate_trip_fare($meters, $waitingSeconds, $vehicleType, $startedAt = null)
@@ -565,19 +323,15 @@ function insert_trip_point($tripToken, $driverId, $pointType, $latitude, $longit
         return false;
     }
 
-    return db_execute(
-        'INSERT INTO trip_points (trip_token, driver_id, point_type, latitude, longitude, meter_mark, captured_at)
-         VALUES (?, ?, ?, ?, ?, ?, NOW())',
-        'sissdd',
-        [
-            $tripToken,
-            (int) $driverId,
-            $pointType,
-            (float) $latitude,
-            (float) $longitude,
-            (float) $meterMark,
-        ]
-    );
+    return insert_trip_point_record([
+        'trip_token' => $tripToken,
+        'driver_id' => (int) $driverId,
+        'point_type' => $pointType,
+        'latitude' => (float) $latitude,
+        'longitude' => (float) $longitude,
+        'meter_mark' => (float) $meterMark,
+        'captured_at' => data_now(),
+    ]);
 }
 
 function flash_class($type)
@@ -706,9 +460,3 @@ function render_page_end()
 </html>
     <?php
 }
-
-
-
-
-
-

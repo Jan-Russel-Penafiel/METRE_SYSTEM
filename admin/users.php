@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_login(['admin']);
 
 $editingId = isset($_GET['edit']) ? (int) $_GET['edit'] : 0;
-$editingUser = $editingId > 0 ? db_select_one('SELECT * FROM users WHERE id = ? LIMIT 1', 'i', [$editingId]) : null;
+$editingUser = $editingId > 0 ? find_user_by_id($editingId) : null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int) ($_POST['id'] ?? 0);
@@ -25,32 +25,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userType = 'driver';
     }
 
-    $duplicate = db_select_one(
-        'SELECT id FROM users WHERE username = ? AND id <> ? LIMIT 1',
-        'si',
-        [$username, $id]
-    );
-
-    if ($duplicate) {
+    if (username_exists($username, $id)) {
         set_flash('That username is already in use.', 'error');
         redirect_to('admin/users.php' . ($id ? '?edit=' . $id : ''));
     }
 
     if ($id > 0) {
-        db_execute(
-            'UPDATE users SET full_name = ?, username = ?, user_type = ?, vehicle_type = ?, is_active = ? WHERE id = ?',
-            'ssssii',
-            [$fullName, $username, $userType, $vehicleType, $isActive, $id]
-        );
+        $attributes = [
+            'full_name' => $fullName,
+            'username' => $username,
+            'user_type' => $userType,
+            'vehicle_type' => $vehicleType,
+            'is_active' => $isActive,
+        ];
 
         if ($password !== '') {
-            db_execute(
-                'UPDATE users SET password_hash = ? WHERE id = ?',
-                'si',
-                [password_hash($password, PASSWORD_DEFAULT), $id]
-            );
+            $attributes['password_hash'] = password_hash($password, PASSWORD_DEFAULT);
         }
 
+        save_user_record($id, $attributes);
         set_flash('User account updated.', 'success');
     } else {
         if ($password === '') {
@@ -58,11 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirect_to('admin/users.php');
         }
 
-        db_execute(
-            'INSERT INTO users (full_name, username, password_hash, user_type, vehicle_type, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())',
-            'sssssi',
-            [$fullName, $username, password_hash($password, PASSWORD_DEFAULT), $userType, $vehicleType, $isActive]
-        );
+        save_user_record(0, [
+            'full_name' => $fullName,
+            'username' => $username,
+            'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+            'user_type' => $userType,
+            'vehicle_type' => $vehicleType,
+            'is_active' => $isActive,
+        ]);
         set_flash('User account created.', 'success');
     }
 
@@ -70,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $vehicleTypeOptions = get_vehicle_type_options();
-$users = db_select_all('SELECT id, full_name, username, user_type, vehicle_type, is_active, created_at FROM users ORDER BY created_at DESC');
+$users = list_users();
 
 if (!$editingUser) {
     $editingUser = [

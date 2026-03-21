@@ -9,37 +9,22 @@ $weekStart = date('Y-m-d', strtotime('monday this week'));
 $weekEnd = date('Y-m-d', strtotime('sunday this week'));
 $trackingReady = ensure_tracking_schema();
 
-$todayStats = db_select_one(
-    'SELECT COUNT(*) AS trip_count, COALESCE(SUM(final_fare), 0) AS revenue, COALESCE(AVG(final_fare), 0) AS average_fare FROM trips WHERE DATE(started_at) = ?',
-    's',
-    [$today]
-);
+$todayStats = summarize_trips([
+    'date_from' => $today,
+    'date_to' => $today,
+]);
 
-$weekStats = db_select_one(
-    'SELECT COUNT(*) AS trip_count, COALESCE(SUM(final_fare), 0) AS revenue FROM trips WHERE DATE(started_at) BETWEEN ? AND ?',
-    'ss',
-    [$weekStart, $weekEnd]
-);
+$weekStats = summarize_trips([
+    'date_from' => $weekStart,
+    'date_to' => $weekEnd,
+]);
 
-$driverCount = db_select_one("SELECT COUNT(*) AS total FROM users WHERE user_type = 'driver' AND is_active = 1");
-$fareCount = db_select_one('SELECT COUNT(*) AS total FROM fare_settings');
-$activeTracking = $trackingReady
-    ? db_select_all(
-        "SELECT ltt.public_tracking_token, ltt.vehicle_type, ltt.status, ltt.updated_at, u.full_name
-         FROM live_trip_tracking ltt
-         INNER JOIN users u ON u.id = ltt.driver_id
-         WHERE ltt.status IN ('waiting', 'in_trip')
-         ORDER BY ltt.updated_at DESC
-         LIMIT 8"
-    )
-    : [];
-$recentTrips = db_select_all(
-    'SELECT t.id, t.started_at, t.total_meters, t.final_fare, u.full_name
-     FROM trips t
-     INNER JOIN users u ON u.id = t.driver_id
-     ORDER BY t.id DESC
-     LIMIT 6'
-);
+$driverCount = count_active_drivers();
+$fareCount = count_fare_settings_records();
+$activeTracking = $trackingReady ? list_active_live_tracking(8) : [];
+$recentTrips = list_trips_filtered([
+    'limit' => 6,
+]);
 
 render_page_start('Admin Dashboard');
 ?>
@@ -60,11 +45,11 @@ render_page_start('Admin Dashboard');
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div class="text-sm text-slate-500 dark:text-slate-400">Active drivers</div>
-                <div class="mt-2 text-3xl font-black"><?php echo (int) ($driverCount['total'] ?? 0); ?></div>
+                <div class="mt-2 text-3xl font-black"><?php echo (int) $driverCount; ?></div>
             </div>
             <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div class="text-sm text-slate-500 dark:text-slate-400">Configured vehicle fares</div>
-                <div class="mt-2 text-3xl font-black"><?php echo (int) ($fareCount['total'] ?? 0); ?></div>
+                <div class="mt-2 text-3xl font-black"><?php echo (int) $fareCount; ?></div>
             </div>
         </div>
     </section>
