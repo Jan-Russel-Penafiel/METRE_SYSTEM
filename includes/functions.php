@@ -375,9 +375,9 @@ function insert_trip_point($tripToken, $driverId, $pointType, $latitude, $longit
 function flash_class($type)
 {
     $map = [
-        'success' => 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200',
-        'error' => 'border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900 dark:bg-rose-950/50 dark:text-rose-200',
-        'info' => 'border-sky-200 bg-sky-50 text-sky-800 dark:border-sky-900 dark:bg-sky-950/50 dark:text-sky-200',
+        'success' => 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200',
+        'error' => 'border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-950 dark:text-rose-200',
+        'info' => 'border-zinc-200 bg-zinc-50 text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200',
     ];
 
     return $map[$type] ?? $map['info'];
@@ -390,7 +390,7 @@ function render_page_start($title, $options = [])
     $flash = get_flash();
     $extraHead = $options['extra_head'] ?? '';
     $pageId = trim((string) ($options['page_id'] ?? ''));
-    $bodyClass = trim('min-h-full bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100 ' . (string) ($options['body_class'] ?? ''));
+    $bodyClass = trim('min-h-full bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 ' . (string) ($options['body_class'] ?? ''));
     $pageScripts = [];
 
     foreach ((array) ($options['page_scripts'] ?? []) as $scriptPath) {
@@ -465,55 +465,55 @@ function render_page_start($title, $options = [])
 </head>
 <body class="<?php echo h($bodyClass); ?>"<?php echo $pageId !== '' ? ' data-page="' . h($pageId) . '"' : ''; ?>>
 <?php if (!$hideNav): ?>
-    <header class="border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <header class="border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/90">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:py-4 sm:px-6 lg:px-8">
             <a href="<?php echo h($user && $user['user_type'] === 'admin' ? url('admin/index.php') : url('meter.php')); ?>" class="text-base font-semibold tracking-tight sm:text-lg">
                 <?php echo h(APP_NAME); ?>
             </a>
-            <button type="button" class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-medium sm:px-3 sm:py-2 sm:text-sm md:hidden dark:border-slate-700" data-mobile-menu-toggle>
+            <button type="button" class="rounded-md border border-zinc-300 px-2.5 py-1.5 text-xs font-medium sm:px-3 sm:py-2 sm:text-sm md:hidden dark:border-zinc-700" data-mobile-menu-toggle>
                 Menu
             </button>
             <nav class="hidden items-center gap-2 sm:gap-3 md:flex" data-mobile-menu>
                 <?php if ($user): ?>
                     <?php if ($user['user_type'] === 'driver'): ?>
-                        <a href="<?php echo h(url('meter.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Meter</a>
-                        <a href="<?php echo h(url('history.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">History</a>
+                        <a href="<?php echo h(url('meter.php')); ?>" class="rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-zinc-100 sm:px-3 sm:py-2 dark:hover:bg-zinc-800">Meter</a>
+                        <a href="<?php echo h(url('history.php')); ?>" class="rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-zinc-100 sm:px-3 sm:py-2 dark:hover:bg-zinc-800">History</a>
                     <?php endif; ?>
                     <?php if ($user['user_type'] === 'admin'): ?>
-                        <a href="<?php echo h(url('admin/index.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Dashboard</a>
-                        <a href="<?php echo h(url('admin/fare_settings.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Fares</a>
-                        <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Reports</a>
-                        <a href="<?php echo h(url('admin/users.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Users</a>
+                        <a href="<?php echo h(url('admin/index.php')); ?>" class="rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-zinc-100 sm:px-3 sm:py-2 dark:hover:bg-zinc-800">Dashboard</a>
+                        <a href="<?php echo h(url('admin/fare_settings.php')); ?>" class="rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-zinc-100 sm:px-3 sm:py-2 dark:hover:bg-zinc-800">Fares</a>
+                        <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-zinc-100 sm:px-3 sm:py-2 dark:hover:bg-zinc-800">Reports</a>
+                        <a href="<?php echo h(url('admin/users.php')); ?>" class="rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-zinc-100 sm:px-3 sm:py-2 dark:hover:bg-zinc-800">Users</a>
                     <?php endif; ?>
-                    <button type="button" class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm font-medium sm:px-3 sm:py-2 dark:border-slate-700" data-theme-toggle>
+                    <button type="button" class="rounded-md border border-zinc-300 px-2.5 py-1.5 text-sm font-medium sm:px-3 sm:py-2 dark:border-zinc-700" data-theme-toggle>
                         Theme
                     </button>
-                    <span class="hidden text-sm text-slate-500 lg:inline dark:text-slate-400">
+                    <span class="hidden text-sm text-zinc-500 lg:inline dark:text-zinc-400">
                         <?php echo h($user['full_name']); ?>
                     </span>
-                    <a href="<?php echo h(url('logout.php')); ?>" class="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white hover:bg-slate-700 sm:px-3 sm:py-2 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-300">Logout</a>
+                    <a href="<?php echo h(url('logout.php')); ?>" class="rounded-md bg-zinc-900 px-2.5 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 sm:px-3 sm:py-2 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">Logout</a>
                 <?php else: ?>
-                    <a href="<?php echo h(url('login.php')); ?>" class="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white sm:px-3 sm:py-2 dark:bg-slate-100 dark:text-slate-900">Login</a>
+                    <a href="<?php echo h(url('login.php')); ?>" class="rounded-md bg-zinc-900 px-2.5 py-1.5 text-sm font-medium text-white sm:px-3 sm:py-2 dark:bg-zinc-50 dark:text-zinc-900">Login</a>
                 <?php endif; ?>
             </nav>
         </div>
-        <div class="hidden border-t border-slate-200 px-4 py-3 md:hidden dark:border-slate-800" data-mobile-menu-panel>
+        <div class="hidden border-t border-zinc-200 px-4 py-3 md:hidden dark:border-zinc-800" data-mobile-menu-panel>
             <div class="flex flex-col gap-1.5 sm:gap-2">
                 <?php if ($user && $user['user_type'] === 'driver'): ?>
-                    <a href="<?php echo h(url('meter.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Meter</a>
-                    <a href="<?php echo h(url('history.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">History</a>
+                    <a href="<?php echo h(url('meter.php')); ?>" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Meter</a>
+                    <a href="<?php echo h(url('history.php')); ?>" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">History</a>
                 <?php endif; ?>
                 <?php if ($user && $user['user_type'] === 'admin'): ?>
-                    <a href="<?php echo h(url('admin/index.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Dashboard</a>
-                    <a href="<?php echo h(url('admin/fare_settings.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Fare Settings</a>
-                    <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Reports</a>
-                    <a href="<?php echo h(url('admin/users.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Users</a>
+                    <a href="<?php echo h(url('admin/index.php')); ?>" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Dashboard</a>
+                    <a href="<?php echo h(url('admin/fare_settings.php')); ?>" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Fare Settings</a>
+                    <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Reports</a>
+                    <a href="<?php echo h(url('admin/users.php')); ?>" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Users</a>
                 <?php endif; ?>
                 <?php if ($user): ?>
-                    <button type="button" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-left dark:border-slate-700" data-theme-toggle>
+                    <button type="button" class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-left dark:border-zinc-700" data-theme-toggle>
                         Toggle Theme
                     </button>
-                    <a href="<?php echo h(url('logout.php')); ?>" class="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white dark:bg-slate-100 dark:text-slate-900">Logout</a>
+                    <a href="<?php echo h(url('logout.php')); ?>" class="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900">Logout</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -521,7 +521,7 @@ function render_page_start($title, $options = [])
 <?php endif; ?>
     <main class="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6 md:px-6 lg:px-8">
         <?php if ($flash): ?>
-            <div class="mb-6 rounded-2xl border px-4 py-3 text-sm <?php echo h(flash_class($flash['type'])); ?>">
+            <div class="mb-6 rounded-md border px-4 py-3 text-sm <?php echo h(flash_class($flash['type'])); ?>">
                 <?php echo h($flash['message']); ?>
             </div>
         <?php endif; ?>

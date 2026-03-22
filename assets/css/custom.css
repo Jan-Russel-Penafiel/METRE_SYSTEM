@@ -1,47 +1,49 @@
-/* Custom Tailwind utilities and dark mode support */
+/* Custom Tailwind utilities and dark mode support - shadcn/ui style */
 
 /* Dark mode background colors */
-.dark .dark\:bg-slate-950 { background-color: rgb(2 6 23) !important; }
-.dark .dark\:bg-slate-900 { background-color: rgb(15 23 42) !important; }
-.dark .dark\:bg-slate-900\/90 { background-color: rgb(15 23 42 / 0.9) !important; }
-.dark .dark\:bg-slate-800 { background-color: rgb(30 41 59) !important; }
-.dark .dark\:bg-slate-950\/50 { background-color: rgb(2 6 23 / 0.5) !important; }
-.dark .dark\:bg-slate-950\/60 { background-color: rgb(2 6 23 / 0.6) !important; }
+.dark .dark\:bg-zinc-950 { background-color: rgb(9 9 11) !important; }
+.dark .dark\:bg-zinc-900 { background-color: rgb(24 24 27) !important; }
+.dark .dark\:bg-zinc-900\/90 { background-color: rgb(24 24 27 / 0.9) !important; }
+.dark .dark\:bg-zinc-800 { background-color: rgb(39 39 42) !important; }
+.dark .dark\:bg-zinc-800\/50 { background-color: rgb(39 39 42 / 0.5) !important; }
+.dark .dark\:bg-zinc-950\/50 { background-color: rgb(9 9 11 / 0.5) !important; }
+.dark .dark\:bg-zinc-950\/60 { background-color: rgb(9 9 11 / 0.6) !important; }
 .dark .dark\:bg-white\/10 { background-color: rgb(255 255 255 / 0.1) !important; }
 .dark .dark\:bg-white\/5 { background-color: rgb(255 255 255 / 0.05) !important; }
-.dark .dark\:bg-slate-100 { background-color: rgb(241 245 249) !important; }
+.dark .dark\:bg-zinc-50 { background-color: rgb(250 250 250) !important; }
+.dark .dark\:bg-zinc-100 { background-color: rgb(244 244 245) !important; }
 
 /* Dark mode text colors */
-.dark .dark\:text-slate-100 { color: rgb(241 245 249) !important; }
-.dark .dark\:text-slate-200 { color: rgb(226 232 240) !important; }
-.dark .dark\:text-slate-300 { color: rgb(203 213 225) !important; }
-.dark .dark\:text-slate-400 { color: rgb(148 163 184) !important; }
-.dark .dark\:text-slate-500 { color: rgb(100 116 139) !important; }
-.dark .dark\:text-slate-900 { color: rgb(15 23 42) !important; }
-.dark .dark\:text-sky-400 { color: rgb(56 189 248) !important; }
+.dark .dark\:text-zinc-50 { color: rgb(250 250 250) !important; }
+.dark .dark\:text-zinc-100 { color: rgb(244 244 245) !important; }
+.dark .dark\:text-zinc-200 { color: rgb(228 228 231) !important; }
+.dark .dark\:text-zinc-300 { color: rgb(212 212 216) !important; }
+.dark .dark\:text-zinc-400 { color: rgb(161 161 170) !important; }
+.dark .dark\:text-zinc-500 { color: rgb(113 113 122) !important; }
+.dark .dark\:text-zinc-900 { color: rgb(24 24 27) !important; }
 .dark .dark\:text-emerald-200 { color: rgb(167 243 208) !important; }
+.dark .dark\:text-emerald-300 { color: rgb(110 231 183) !important; }
 .dark .dark\:text-rose-200 { color: rgb(254 205 211) !important; }
 .dark .dark\:text-amber-200 { color: rgb(253 230 138) !important; }
 
 /* Dark mode border colors */
-.dark .dark\:border-slate-800 { border-color: rgb(30 41 59) !important; }
-.dark .dark\:border-slate-700 { border-color: rgb(51 65 85) !important; }
-.dark .dark\:border-emerald-900 { border-color: rgb(6 78 59) !important; }
-.dark .dark\:border-rose-900 { border-color: rgb(136 19 55) !important; }
-.dark .dark\:border-amber-900 { border-color: rgb(120 53 15) !important; }
-.dark .dark\:border-sky-900 { border-color: rgb(12 74 110) !important; }
+.dark .dark\:border-zinc-800 { border-color: rgb(39 39 42) !important; }
+.dark .dark\:border-zinc-700 { border-color: rgb(63 63 70) !important; }
+.dark .dark\:border-emerald-800 { border-color: rgb(6 95 70) !important; }
+.dark .dark\:border-rose-800 { border-color: rgb(159 18 57) !important; }
+.dark .dark\:border-amber-800 { border-color: rgb(146 64 14) !important; }
 
 /* Dark mode hover states */
-.dark .dark\:hover\:bg-slate-800:hover { background-color: rgb(30 41 59) !important; }
-.dark .dark\:hover\:bg-slate-300:hover { background-color: rgb(203 213 225) !important; }
+.dark .dark\:hover\:bg-zinc-800:hover { background-color: rgb(39 39 42) !important; }
+.dark .dark\:hover\:bg-zinc-200:hover { background-color: rgb(228 228 231) !important; }
 
 /* Flash message dark mode styles */
-.dark .dark\:bg-emerald-950\/50 { background-color: rgb(2 44 34 / 0.5) !important; }
-.dark .dark\:bg-rose-950\/50 { background-color: rgb(76 5 25 / 0.5) !important; }
-.dark .dark\:bg-sky-950\/50 { background-color: rgb(8 47 73 / 0.5) !important; }
-.dark .dark\:bg-amber-950\/50 { background-color: rgb(69 26 3 / 0.5) !important; }
+.dark .dark\:bg-emerald-950 { background-color: rgb(2 44 34) !important; }
+.dark .dark\:bg-rose-950 { background-color: rgb(76 5 25) !important; }
+.dark .dark\:bg-zinc-900 { background-color: rgb(24 24 27) !important; }
+.dark .dark\:bg-amber-950 { background-color: rgb(69 26 3) !important; }
 
-/* Form styles (from @tailwindcss/forms plugin) */
+/* Form styles - shadcn/ui inspired */
 [type='text'],
 [type='email'],
 [type='url'],
@@ -59,12 +61,12 @@ textarea,
 select {
     appearance: none;
     background-color: #fff;
-    border-color: rgb(203 213 225);
+    border-color: rgb(228 228 231);
     border-width: 1px;
-    border-radius: 0;
+    border-radius: 0.375rem;
     padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
 }
 
 [type='text']:focus,
@@ -84,14 +86,14 @@ textarea:focus,
 select:focus {
     outline: 2px solid transparent;
     outline-offset: 2px;
-    --tw-ring-color: rgb(14 165 233);
-    --tw-ring-offset-width: 0px;
-    box-shadow: 0 0 0 2px var(--tw-ring-color);
-    border-color: rgb(14 165 233);
+    --tw-ring-color: rgb(24 24 27);
+    --tw-ring-offset-width: 2px;
+    box-shadow: 0 0 0 var(--tw-ring-offset-width) #fff, 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    border-color: rgb(24 24 27);
 }
 
 select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2371717a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     background-position: right 0.5rem center;
     background-repeat: no-repeat;
     background-size: 1.5em 1.5em;
@@ -110,9 +112,9 @@ select {
     flex-shrink: 0;
     height: 1rem;
     width: 1rem;
-    color: rgb(14 165 233);
+    color: rgb(24 24 27);
     background-color: #fff;
-    border-color: rgb(156 163 175);
+    border-color: rgb(161 161 170);
     border-width: 1px;
 }
 
@@ -128,7 +130,7 @@ select {
 [type='radio']:focus {
     outline: 2px solid transparent;
     outline-offset: 2px;
-    --tw-ring-color: rgb(14 165 233);
+    --tw-ring-color: rgb(24 24 27);
     box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--tw-ring-color);
 }
 
@@ -165,13 +167,46 @@ select {
 .dark [multiple],
 .dark textarea,
 .dark select {
-    background-color: rgb(2 6 23);
-    border-color: rgb(51 65 85);
-    color: rgb(226 232 240);
+    background-color: rgb(9 9 11);
+    border-color: rgb(63 63 70);
+    color: rgb(228 228 231);
+}
+
+.dark [type='text']:focus,
+.dark [type='email']:focus,
+.dark [type='url']:focus,
+.dark [type='password']:focus,
+.dark [type='number']:focus,
+.dark [type='date']:focus,
+.dark [type='datetime-local']:focus,
+.dark [type='month']:focus,
+.dark [type='search']:focus,
+.dark [type='tel']:focus,
+.dark [type='time']:focus,
+.dark [type='week']:focus,
+.dark [multiple]:focus,
+.dark textarea:focus,
+.dark select:focus {
+    --tw-ring-color: rgb(212 212 216);
+    --tw-ring-offset-color: rgb(9 9 11);
+    box-shadow: 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color), 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    border-color: rgb(212 212 216);
 }
 
 .dark select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a1a1aa' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.dark [type='checkbox'],
+.dark [type='radio'] {
+    background-color: rgb(9 9 11);
+    border-color: rgb(113 113 122);
+}
+
+.dark [type='checkbox']:focus,
+.dark [type='radio']:focus {
+    --tw-ring-color: rgb(212 212 216);
+    box-shadow: 0 0 0 2px rgb(9 9 11), 0 0 0 4px var(--tw-ring-color);
 }
 
 /* Disabled state */
@@ -179,7 +214,7 @@ button:disabled,
 input:disabled,
 select:disabled,
 textarea:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
