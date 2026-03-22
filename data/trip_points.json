@@ -1,5 +1,5 @@
 {
-    "last_id": 2,
+    "last_id": 5,
     "records": [
         {
             "id": 1,
@@ -20,6 +20,36 @@
             "longitude": 124.6319007,
             "meter_mark": 34.29,
             "captured_at": "2026-03-22 00:19:05"
+        },
+        {
+            "id": 3,
+            "trip_token": "trip_2_1774144852920",
+            "driver_id": 2,
+            "point_type": "start",
+            "latitude": 6.487208,
+            "longitude": 124.63192,
+            "meter_mark": 0,
+            "captured_at": "2026-03-22 10:00:52"
+        },
+        {
+            "id": 4,
+            "trip_token": "trip_2_1774144852920",
+            "driver_id": 2,
+            "point_type": "checkpoint",
+            "latitude": 6.4862316,
+            "longitude": 124.632125,
+            "meter_mark": 110.91,
+            "captured_at": "2026-03-22 10:00:59"
+        },
+        {
+            "id": 5,
+            "trip_token": "trip_2_1774144852920",
+            "driver_id": 2,
+            "point_type": "end",
+            "latitude": 6.487208,
+            "longitude": 124.63192,
+            "meter_mark": 232.31,
+            "captured_at": "2026-03-22 10:03:57"
         }
     ]
 }

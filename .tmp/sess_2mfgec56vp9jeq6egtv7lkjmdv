@@ -1,1 +1,1 @@
-auth_user|a:5:{s:2:"id";i:1;s:9:"full_name";s:20:"System Administrator";s:8:"username";s:5:"admin";s:9:"user_type";s:5:"admin";s:12:"vehicle_type";s:13:"Standard Taxi";}
+trip_point_meta|a:0:{}

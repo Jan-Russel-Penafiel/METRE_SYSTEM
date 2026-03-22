@@ -402,7 +402,7 @@ function render_page_start($title, $options = [])
         $pageScripts[] = asset_url($scriptPath);
     }
 
-    $preconnectOrigins = ['https://cdn.jsdelivr.net'];
+    $preconnectOrigins = ['https://unpkg.com', 'https://cdn.tailwindcss.com'];
     foreach ((array) ($options['preconnect_origins'] ?? []) as $origin) {
         $origin = rtrim(trim((string) $origin), '/');
         if ($origin === '' || in_array($origin, $preconnectOrigins, true)) {
@@ -436,8 +436,8 @@ function render_page_start($title, $options = [])
 
     if (!empty($options['needs_maplibre'])) {
         $bootConfig['maplibre'] = [
-            'css' => url('assets/libs/maplibre-gl.css'),
-            'js' => url('assets/libs/maplibre-gl.js'),
+            'css' => 'https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.css',
+            'js' => 'https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.js',
         ];
     }
 
@@ -455,12 +455,13 @@ function render_page_start($title, $options = [])
         <link rel="preconnect" href="<?php echo h($origin); ?>" crossorigin>
         <link rel="dns-prefetch" href="<?php echo h($origin); ?>">
     <?php endforeach; ?>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        tailwind.config = { darkMode: 'class' };
         if (localStorage.getItem('metre-theme') === 'dark') {
             document.documentElement.classList.add('dark');
         }
     </script>
-    <link rel="stylesheet" href="<?php echo h(asset_url('assets/libs/tailwind.min.css')); ?>">
     <link rel="stylesheet" href="<?php echo h(asset_url('assets/css/custom.css')); ?>"><?php echo $extraHead; ?>
 </head>
 <body class="<?php echo h($bodyClass); ?>"<?php echo $pageId !== '' ? ' data-page="' . h($pageId) . '"' : ''; ?>>
