@@ -1,0 +1,22 @@
+# Enable URL rewriting
+RewriteEngine On
+
+# Serve static files directly (bypass PHP)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ - [L]
+
+# Set proper MIME types
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType text/css .css
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Enable CORS for assets
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|css)$">
+        Header set Cache-Control "public, max-age=31536000"
+    </FilesMatch>
+</IfModule>

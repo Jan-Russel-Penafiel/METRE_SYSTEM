@@ -3,13 +3,6 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/data_store.php';
 
-$pathInfo = (string) ($_SERVER['PATH_INFO'] ?? '');
-if ($pathInfo !== '' && preg_match('#^/(assets/(?:js|css)/[^?]+)$#i', $pathInfo, $matches)) {
-    $target = rtrim(APP_BASE_URL, '/') . '/' . ltrim($matches[1], '/');
-    $query = isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] !== '' ? '?' . $_SERVER['QUERY_STRING'] : '';
-    header('Location: ' . $target . $query, true, 302);
-    exit;
-}
 if (!ensure_data_store()) {
     http_response_code(500);
     echo '<h1>Unable to initialize the JSON data store.</h1>';
@@ -409,7 +402,7 @@ function render_page_start($title, $options = [])
         $pageScripts[] = asset_url($scriptPath);
     }
 
-    $preconnectOrigins = ['https://cdn.tailwindcss.com'];
+    $preconnectOrigins = ['https://cdn.jsdelivr.net'];
     foreach ((array) ($options['preconnect_origins'] ?? []) as $origin) {
         $origin = rtrim(trim((string) $origin), '/');
         if ($origin === '' || in_array($origin, $preconnectOrigins, true)) {
@@ -443,8 +436,8 @@ function render_page_start($title, $options = [])
 
     if (!empty($options['needs_maplibre'])) {
         $bootConfig['maplibre'] = [
-            'css' => 'https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.css',
-            'js' => 'https://unpkg.com/maplibre-gl@5.16.0/dist/maplibre-gl.js',
+            'css' => url('assets/libs/maplibre-gl.css'),
+            'js' => url('assets/libs/maplibre-gl.js'),
         ];
     }
 
@@ -463,53 +456,49 @@ function render_page_start($title, $options = [])
         <link rel="dns-prefetch" href="<?php echo h($origin); ?>">
     <?php endforeach; ?>
     <script>
-        window.tailwind = window.tailwind || {};
-        window.tailwind.config = {
-            darkMode: 'class'
-        };
         if (localStorage.getItem('metre-theme') === 'dark') {
             document.documentElement.classList.add('dark');
         }
     </script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-    <?php echo $extraHead; ?>
+    <link rel="stylesheet" href="<?php echo h(asset_url('assets/libs/tailwind.min.css')); ?>">
+    <link rel="stylesheet" href="<?php echo h(asset_url('assets/css/custom.css')); ?>"><?php echo $extraHead; ?>
 </head>
 <body class="<?php echo h($bodyClass); ?>"<?php echo $pageId !== '' ? ' data-page="' . h($pageId) . '"' : ''; ?>>
 <?php if (!$hideNav): ?>
     <header class="border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
-        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-            <a href="<?php echo h($user && $user['user_type'] === 'admin' ? url('admin/index.php') : url('meter.php')); ?>" class="text-lg font-semibold tracking-tight">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:py-4 sm:px-6 lg:px-8">
+            <a href="<?php echo h($user && $user['user_type'] === 'admin' ? url('admin/index.php') : url('meter.php')); ?>" class="text-base font-semibold tracking-tight sm:text-lg">
                 <?php echo h(APP_NAME); ?>
             </a>
-            <button type="button" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium md:hidden dark:border-slate-700" data-mobile-menu-toggle>
+            <button type="button" class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-medium sm:px-3 sm:py-2 sm:text-sm md:hidden dark:border-slate-700" data-mobile-menu-toggle>
                 Menu
             </button>
-            <nav class="hidden items-center gap-3 md:flex" data-mobile-menu>
+            <nav class="hidden items-center gap-2 sm:gap-3 md:flex" data-mobile-menu>
                 <?php if ($user): ?>
                     <?php if ($user['user_type'] === 'driver'): ?>
-                        <a href="<?php echo h(url('meter.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Meter</a>
-                        <a href="<?php echo h(url('history.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">History</a>
+                        <a href="<?php echo h(url('meter.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Meter</a>
+                        <a href="<?php echo h(url('history.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">History</a>
                     <?php endif; ?>
                     <?php if ($user['user_type'] === 'admin'): ?>
-                        <a href="<?php echo h(url('admin/index.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Dashboard</a>
-                        <a href="<?php echo h(url('admin/fare_settings.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Fare Settings</a>
-                        <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Reports</a>
-                        <a href="<?php echo h(url('admin/users.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Users</a>
+                        <a href="<?php echo h(url('admin/index.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Dashboard</a>
+                        <a href="<?php echo h(url('admin/fare_settings.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Fares</a>
+                        <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Reports</a>
+                        <a href="<?php echo h(url('admin/users.php')); ?>" class="rounded-lg px-2.5 py-1.5 text-sm font-medium hover:bg-slate-100 sm:px-3 sm:py-2 dark:hover:bg-slate-800">Users</a>
                     <?php endif; ?>
-                    <button type="button" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium dark:border-slate-700" data-theme-toggle>
+                    <button type="button" class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm font-medium sm:px-3 sm:py-2 dark:border-slate-700" data-theme-toggle>
                         Theme
                     </button>
                     <span class="hidden text-sm text-slate-500 lg:inline dark:text-slate-400">
                         <?php echo h($user['full_name']); ?>
                     </span>
-                    <a href="<?php echo h(url('logout.php')); ?>" class="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-300">Logout</a>
+                    <a href="<?php echo h(url('logout.php')); ?>" class="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white hover:bg-slate-700 sm:px-3 sm:py-2 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-300">Logout</a>
                 <?php else: ?>
-                    <a href="<?php echo h(url('login.php')); ?>" class="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white dark:bg-slate-100 dark:text-slate-900">Login</a>
+                    <a href="<?php echo h(url('login.php')); ?>" class="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white sm:px-3 sm:py-2 dark:bg-slate-100 dark:text-slate-900">Login</a>
                 <?php endif; ?>
             </nav>
         </div>
         <div class="hidden border-t border-slate-200 px-4 py-3 md:hidden dark:border-slate-800" data-mobile-menu-panel>
-            <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-1.5 sm:gap-2">
                 <?php if ($user && $user['user_type'] === 'driver'): ?>
                     <a href="<?php echo h(url('meter.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">Meter</a>
                     <a href="<?php echo h(url('history.php')); ?>" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800">History</a>
@@ -530,7 +519,7 @@ function render_page_start($title, $options = [])
         </div>
     </header>
 <?php endif; ?>
-    <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <main class="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6 md:px-6 lg:px-8">
         <?php if ($flash): ?>
             <div class="mb-6 rounded-2xl border px-4 py-3 text-sm <?php echo h(flash_class($flash['type'])); ?>">
                 <?php echo h($flash['message']); ?>

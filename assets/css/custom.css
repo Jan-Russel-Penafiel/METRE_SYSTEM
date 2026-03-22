@@ -1,0 +1,229 @@
+/* Custom Tailwind utilities and dark mode support */
+
+/* Dark mode background colors */
+.dark .dark\:bg-slate-950 { background-color: rgb(2 6 23) !important; }
+.dark .dark\:bg-slate-900 { background-color: rgb(15 23 42) !important; }
+.dark .dark\:bg-slate-900\/90 { background-color: rgb(15 23 42 / 0.9) !important; }
+.dark .dark\:bg-slate-800 { background-color: rgb(30 41 59) !important; }
+.dark .dark\:bg-slate-950\/50 { background-color: rgb(2 6 23 / 0.5) !important; }
+.dark .dark\:bg-slate-950\/60 { background-color: rgb(2 6 23 / 0.6) !important; }
+.dark .dark\:bg-white\/10 { background-color: rgb(255 255 255 / 0.1) !important; }
+.dark .dark\:bg-white\/5 { background-color: rgb(255 255 255 / 0.05) !important; }
+.dark .dark\:bg-slate-100 { background-color: rgb(241 245 249) !important; }
+
+/* Dark mode text colors */
+.dark .dark\:text-slate-100 { color: rgb(241 245 249) !important; }
+.dark .dark\:text-slate-200 { color: rgb(226 232 240) !important; }
+.dark .dark\:text-slate-300 { color: rgb(203 213 225) !important; }
+.dark .dark\:text-slate-400 { color: rgb(148 163 184) !important; }
+.dark .dark\:text-slate-500 { color: rgb(100 116 139) !important; }
+.dark .dark\:text-slate-900 { color: rgb(15 23 42) !important; }
+.dark .dark\:text-sky-400 { color: rgb(56 189 248) !important; }
+.dark .dark\:text-emerald-200 { color: rgb(167 243 208) !important; }
+.dark .dark\:text-rose-200 { color: rgb(254 205 211) !important; }
+.dark .dark\:text-amber-200 { color: rgb(253 230 138) !important; }
+
+/* Dark mode border colors */
+.dark .dark\:border-slate-800 { border-color: rgb(30 41 59) !important; }
+.dark .dark\:border-slate-700 { border-color: rgb(51 65 85) !important; }
+.dark .dark\:border-emerald-900 { border-color: rgb(6 78 59) !important; }
+.dark .dark\:border-rose-900 { border-color: rgb(136 19 55) !important; }
+.dark .dark\:border-amber-900 { border-color: rgb(120 53 15) !important; }
+.dark .dark\:border-sky-900 { border-color: rgb(12 74 110) !important; }
+
+/* Dark mode hover states */
+.dark .dark\:hover\:bg-slate-800:hover { background-color: rgb(30 41 59) !important; }
+.dark .dark\:hover\:bg-slate-300:hover { background-color: rgb(203 213 225) !important; }
+
+/* Flash message dark mode styles */
+.dark .dark\:bg-emerald-950\/50 { background-color: rgb(2 44 34 / 0.5) !important; }
+.dark .dark\:bg-rose-950\/50 { background-color: rgb(76 5 25 / 0.5) !important; }
+.dark .dark\:bg-sky-950\/50 { background-color: rgb(8 47 73 / 0.5) !important; }
+.dark .dark\:bg-amber-950\/50 { background-color: rgb(69 26 3 / 0.5) !important; }
+
+/* Form styles (from @tailwindcss/forms plugin) */
+[type='text'],
+[type='email'],
+[type='url'],
+[type='password'],
+[type='number'],
+[type='date'],
+[type='datetime-local'],
+[type='month'],
+[type='search'],
+[type='tel'],
+[type='time'],
+[type='week'],
+[multiple],
+textarea,
+select {
+    appearance: none;
+    background-color: #fff;
+    border-color: rgb(203 213 225);
+    border-width: 1px;
+    border-radius: 0;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+[type='text']:focus,
+[type='email']:focus,
+[type='url']:focus,
+[type='password']:focus,
+[type='number']:focus,
+[type='date']:focus,
+[type='datetime-local']:focus,
+[type='month']:focus,
+[type='search']:focus,
+[type='tel']:focus,
+[type='time']:focus,
+[type='week']:focus,
+[multiple]:focus,
+textarea:focus,
+select:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    --tw-ring-color: rgb(14 165 233);
+    --tw-ring-offset-width: 0px;
+    box-shadow: 0 0 0 2px var(--tw-ring-color);
+    border-color: rgb(14 165 233);
+}
+
+select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+[type='checkbox'],
+[type='radio'] {
+    appearance: none;
+    padding: 0;
+    color-adjust: exact;
+    display: inline-block;
+    vertical-align: middle;
+    background-origin: border-box;
+    user-select: none;
+    flex-shrink: 0;
+    height: 1rem;
+    width: 1rem;
+    color: rgb(14 165 233);
+    background-color: #fff;
+    border-color: rgb(156 163 175);
+    border-width: 1px;
+}
+
+[type='checkbox'] {
+    border-radius: 0.25rem;
+}
+
+[type='radio'] {
+    border-radius: 100%;
+}
+
+[type='checkbox']:focus,
+[type='radio']:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    --tw-ring-color: rgb(14 165 233);
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--tw-ring-color);
+}
+
+[type='checkbox']:checked,
+[type='radio']:checked {
+    border-color: transparent;
+    background-color: currentColor;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+[type='checkbox']:checked {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+}
+
+[type='radio']:checked {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+}
+
+/* Dark mode form styles */
+.dark [type='text'],
+.dark [type='email'],
+.dark [type='url'],
+.dark [type='password'],
+.dark [type='number'],
+.dark [type='date'],
+.dark [type='datetime-local'],
+.dark [type='month'],
+.dark [type='search'],
+.dark [type='tel'],
+.dark [type='time'],
+.dark [type='week'],
+.dark [multiple],
+.dark textarea,
+.dark select {
+    background-color: rgb(2 6 23);
+    border-color: rgb(51 65 85);
+    color: rgb(226 232 240);
+}
+
+.dark select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Disabled state */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Additional responsive utilities for mobile */
+@media (max-width: 639px) {
+    .text-4xl {
+        font-size: 1.875rem;
+        line-height: 2.25rem;
+    }
+
+    .text-3xl {
+        font-size: 1.5rem;
+        line-height: 2rem;
+    }
+
+    .px-6 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .py-8 {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+}
+
+/* Scrollbar styling for mobile tables */
+.overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile card view utility classes */
+@media (max-width: 1023px) {
+    .mobile-card {
+        display: block !important;
+    }
+
+    .mobile-hidden {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .desktop-hidden {
+        display: none !important;
+    }
+}

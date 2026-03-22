@@ -28,60 +28,84 @@ $recentTrips = list_trips_filtered([
 
 render_page_start('Admin Dashboard');
 ?>
-<div class="space-y-8">
-    <section class="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-        <div class="rounded-3xl bg-slate-900 px-6 py-8 text-white shadow-xl sm:px-8">
-            <p class="text-sm uppercase tracking-[0.2em] text-sky-200">Operations overview</p>
-            <h1 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Dispatch and fare controls in one place.</h1>
-            <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+<div class="space-y-6 sm:space-y-8">
+    <section class="grid gap-4 sm:gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+        <div class="rounded-2xl bg-slate-900 px-4 py-6 text-white shadow-xl sm:rounded-3xl sm:px-6 sm:py-8 md:px-8">
+            <p class="text-xs uppercase tracking-[0.15em] text-sky-200 sm:text-sm sm:tracking-[0.2em]">Operations overview</p>
+            <h1 class="mt-2 text-2xl font-black tracking-tight sm:mt-3 sm:text-3xl md:text-4xl">Dispatch and fare controls in one place.</h1>
+            <p class="mt-3 max-w-2xl text-xs leading-6 text-slate-300 sm:mt-4 sm:text-sm sm:leading-7 md:text-base">
                 Update fare rules, monitor completed trips, and export period reports from a mobile-friendly admin console.
             </p>
-            <div class="mt-6 flex flex-wrap gap-3">
-                <a href="<?php echo h(url('admin/fare_settings.php')); ?>" class="rounded-2xl bg-sky-500 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-400">Manage Fare Settings</a>
-                <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-2xl border border-white/15 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">Open Reports</a>
+            <div class="mt-5 flex flex-col gap-2 sm:mt-6 sm:flex-row sm:flex-wrap sm:gap-3">
+                <a href="<?php echo h(url('admin/fare_settings.php')); ?>" class="rounded-xl bg-sky-500 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-sky-400 sm:rounded-2xl sm:py-3">Manage Fare Settings</a>
+                <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-xl border border-white/15 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-white/10 sm:rounded-2xl sm:py-3">Open Reports</a>
             </div>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <div class="text-sm text-slate-500 dark:text-slate-400">Active drivers</div>
-                <div class="mt-2 text-3xl font-black"><?php echo (int) $driverCount; ?></div>
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+                <div class="text-xs text-slate-500 sm:text-sm dark:text-slate-400">Active drivers</div>
+                <div class="mt-1.5 text-2xl font-black sm:mt-2 sm:text-3xl"><?php echo (int) $driverCount; ?></div>
             </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <div class="text-sm text-slate-500 dark:text-slate-400">Configured vehicle fares</div>
-                <div class="mt-2 text-3xl font-black"><?php echo (int) $fareCount; ?></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+                <div class="text-xs text-slate-500 sm:text-sm dark:text-slate-400">Vehicle fares</div>
+                <div class="mt-1.5 text-2xl font-black sm:mt-2 sm:text-3xl"><?php echo (int) $fareCount; ?></div>
             </div>
         </div>
     </section>
 
-    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <div class="text-sm text-slate-500 dark:text-slate-400">Trips today</div>
-            <div class="mt-2 text-3xl font-black"><?php echo (int) ($todayStats['trip_count'] ?? 0); ?></div>
+    <section class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+            <div class="text-xs text-slate-500 sm:text-sm dark:text-slate-400">Trips today</div>
+            <div class="mt-1.5 text-2xl font-black sm:mt-2 sm:text-3xl"><?php echo (int) ($todayStats['trip_count'] ?? 0); ?></div>
         </div>
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <div class="text-sm text-slate-500 dark:text-slate-400">Revenue today</div>
-            <div class="mt-2 text-3xl font-black"><?php echo h(format_currency($todayStats['revenue'] ?? 0)); ?></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+            <div class="text-xs text-slate-500 sm:text-sm dark:text-slate-400">Revenue today</div>
+            <div class="mt-1.5 text-xl font-black sm:mt-2 sm:text-3xl"><?php echo h(format_currency($todayStats['revenue'] ?? 0)); ?></div>
         </div>
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <div class="text-sm text-slate-500 dark:text-slate-400">Weekly trips</div>
-            <div class="mt-2 text-3xl font-black"><?php echo (int) ($weekStats['trip_count'] ?? 0); ?></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+            <div class="text-xs text-slate-500 sm:text-sm dark:text-slate-400">Weekly trips</div>
+            <div class="mt-1.5 text-2xl font-black sm:mt-2 sm:text-3xl"><?php echo (int) ($weekStats['trip_count'] ?? 0); ?></div>
         </div>
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <div class="text-sm text-slate-500 dark:text-slate-400">Average fare today</div>
-            <div class="mt-2 text-3xl font-black"><?php echo h(format_currency($todayStats['average_fare'] ?? 0)); ?></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+            <div class="text-xs text-slate-500 sm:text-sm dark:text-slate-400">Avg fare today</div>
+            <div class="mt-1.5 text-xl font-black sm:mt-2 sm:text-3xl"><?php echo h(format_currency($todayStats['average_fare'] ?? 0)); ?></div>
         </div>
     </section>
 
-    <section class="rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div class="flex items-center justify-between gap-4 border-b border-slate-200 px-6 py-5 dark:border-slate-800">
+    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm sm:rounded-3xl dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex flex-col gap-3 border-b border-slate-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-5 dark:border-slate-800">
             <div>
-                <h2 class="text-xl font-bold tracking-tight">Generated 4-digit tracking codes</h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Admins can share these 4-digit live trip codes instead of the full tracking link.</p>
+                <h2 class="text-lg font-bold tracking-tight sm:text-xl">4-digit tracking codes</h2>
+                <p class="mt-0.5 text-xs text-slate-500 sm:mt-1 sm:text-sm dark:text-slate-400">Share these live trip codes instead of full tracking links.</p>
             </div>
-            <a href="<?php echo h(url('index.php')); ?>" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">Open tracker</a>
+            <a href="<?php echo h(url('index.php')); ?>" class="self-start rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold hover:bg-slate-50 sm:rounded-2xl sm:px-4 sm:text-sm dark:border-slate-700 dark:hover:bg-slate-800">Open tracker</a>
         </div>
-        <div class="overflow-x-auto">
+
+        <!-- Mobile card view -->
+        <div class="space-y-3 p-4 lg:hidden">
+            <?php if (!$activeTracking): ?>
+                <div class="py-6 text-center text-xs text-slate-500 sm:text-sm dark:text-slate-400">No live tracking codes available yet.</div>
+            <?php endif; ?>
+            <?php foreach ($activeTracking as $tracking): ?>
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4 dark:border-slate-700 dark:bg-slate-800/50">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="font-medium text-sm"><?php echo h($tracking['full_name']); ?></div>
+                            <div class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"><?php echo h($tracking['vehicle_type']); ?></div>
+                        </div>
+                        <code class="rounded-lg bg-slate-200 px-2 py-1 text-xs font-bold dark:bg-slate-700"><?php echo h($tracking['public_tracking_token']); ?></code>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between gap-2 text-xs">
+                        <span class="text-slate-500 dark:text-slate-400"><?php echo h(str_replace('_', ' ', $tracking['status'])); ?></span>
+                        <a href="<?php echo h(url('index.php?token=' . $tracking['public_tracking_token'])); ?>" class="text-sky-600 hover:text-sky-700 dark:text-sky-400">Track</a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Desktop table view -->
+        <div class="hidden overflow-x-auto lg:block">
             <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
                 <thead class="bg-slate-50 dark:bg-slate-950/50">
                     <tr>
@@ -116,15 +140,41 @@ render_page_start('Admin Dashboard');
         </div>
     </section>
 
-    <section class="rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div class="flex items-center justify-between gap-4 border-b border-slate-200 px-6 py-5 dark:border-slate-800">
+    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm sm:rounded-3xl dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex flex-col gap-3 border-b border-slate-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-5 dark:border-slate-800">
             <div>
-                <h2 class="text-xl font-bold tracking-tight">Recent trips</h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Latest completed fares across all drivers.</p>
+                <h2 class="text-lg font-bold tracking-tight sm:text-xl">Recent trips</h2>
+                <p class="mt-0.5 text-xs text-slate-500 sm:mt-1 sm:text-sm dark:text-slate-400">Latest completed fares across all drivers.</p>
             </div>
-            <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">View full report</a>
+            <a href="<?php echo h(url('admin/reports.php')); ?>" class="self-start rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold hover:bg-slate-50 sm:rounded-2xl sm:px-4 sm:text-sm dark:border-slate-700 dark:hover:bg-slate-800">View full report</a>
         </div>
-        <div class="overflow-x-auto">
+
+        <!-- Mobile card view -->
+        <div class="space-y-3 p-4 lg:hidden">
+            <?php if (!$recentTrips): ?>
+                <div class="py-6 text-center text-xs text-slate-500 sm:text-sm dark:text-slate-400">No trips recorded yet.</div>
+            <?php endif; ?>
+            <?php foreach ($recentTrips as $trip): ?>
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4 dark:border-slate-700 dark:bg-slate-800/50">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="font-medium text-sm"><?php echo h($trip['full_name']); ?></div>
+                            <div class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"><?php echo h(date('M d, h:i A', strtotime($trip['started_at']))); ?></div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm text-sky-600 dark:text-sky-400"><?php echo h(format_currency($trip['final_fare'])); ?></div>
+                            <div class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"><?php echo h(format_distance_with_km($trip['total_meters'])); ?></div>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-end">
+                        <a href="<?php echo h(url('receipt.php?id=' . (int) $trip['id'])); ?>" class="text-xs text-sky-600 hover:text-sky-700 dark:text-sky-400">View Receipt</a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Desktop table view -->
+        <div class="hidden overflow-x-auto lg:block">
             <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
                 <thead class="bg-slate-50 dark:bg-slate-950/50">
                     <tr>
