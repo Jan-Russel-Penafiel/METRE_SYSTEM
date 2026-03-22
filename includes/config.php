@@ -19,7 +19,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 date_default_timezone_set('Asia/Manila');
 
-define('APP_NAME', 'Metre');
+define('APP_NAME', 'SakayMeter');
 define('APP_BASE_URL', getenv('APP_BASE_URL') !== false ? getenv('APP_BASE_URL') : '/metre');
 define('DATA_STORAGE_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data');
 

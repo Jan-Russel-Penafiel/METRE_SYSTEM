@@ -33,9 +33,6 @@ render_page_start('Admin Dashboard');
         <div class="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-6 text-white sm:px-6 sm:py-8 md:px-8">
             <p class="text-xs uppercase tracking-wide text-zinc-400 sm:text-sm">Operations overview</p>
             <h1 class="mt-2 text-2xl font-black tracking-tight sm:mt-3 sm:text-3xl md:text-4xl">Dispatch and fare controls in one place.</h1>
-            <p class="mt-3 max-w-2xl text-xs leading-6 text-zinc-400 sm:mt-4 sm:text-sm sm:leading-7 md:text-base">
-                Update fare rules, monitor completed trips, and export period reports from a mobile-friendly admin console.
-            </p>
             <div class="mt-5 flex flex-col gap-2 sm:mt-6 sm:flex-row sm:flex-wrap sm:gap-3">
                 <a href="<?php echo h(url('admin/fare_settings.php')); ?>" class="rounded-md bg-zinc-50 px-4 py-2 text-center text-sm font-medium text-zinc-900 hover:bg-zinc-200">Manage Fare Settings</a>
                 <a href="<?php echo h(url('admin/reports.php')); ?>" class="rounded-md border border-zinc-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-zinc-800">Open Reports</a>

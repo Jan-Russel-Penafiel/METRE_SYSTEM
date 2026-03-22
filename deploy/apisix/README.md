@@ -18,7 +18,39 @@ Use an empty `APISIX_GATEWAY_BASE_URL` when APISIX is exposed on the same origin
 
 Replace the admin key and upstream host if your PHP app is not served from `127.0.0.1:80/metre`.
 
-### Live tracking route with short memory cache
+### GraphQL route for driver mutations and cached public tracking queries
+
+```bash
+curl http://127.0.0.1:9180/apisix/admin/routes/metre-graphql \
+  -H "X-API-KEY: $admin_key" \
+  -X PUT \
+  -d '{
+    "uri": "/metre-gateway/api/graphql.php",
+    "methods": ["GET", "POST", "OPTIONS"],
+    "plugins": {
+      "proxy-rewrite": {
+        "uri": "/metre/api/graphql.php"
+      },
+      "proxy-cache": {
+        "cache_strategy": "memory",
+        "cache_zone": "memory_cache",
+        "cache_ttl": 5,
+        "cache_method": ["GET"],
+        "cache_http_status": [200]
+      }
+    },
+    "upstream": {
+      "type": "roundrobin",
+      "nodes": {
+        "127.0.0.1:80": 1
+      }
+    }
+  }'
+```
+
+The UI now uses GraphQL for the live meter and public tracker. `GET` requests cache the public `trackingStatus` query, while `POST` is used for the authenticated `updateFare` and `endTrip` mutations.
+
+### Legacy live tracking route with short memory cache
 
 ```bash
 curl http://127.0.0.1:9180/apisix/admin/routes/metre-tracking \
